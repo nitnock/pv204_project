@@ -42,7 +42,7 @@ def save_signature(signature):
     try:
         with open(file_path, "w") as f:
             f.write(signature)
-        print(f"✅ Signature saved → {file_path}")
+        print(f"Signature saved → {file_path}")
     except Exception as e:
         print(f"❌ Error saving signature: {e}")
 
@@ -50,11 +50,11 @@ def sign_message(message, shares, threshold):
     """
     Sign a message using the provided shares and threshold.
     """
-    print(f"🔐 Signing message: {message}")
+    print(f"Signing message: {message}")
     
     # Ensure sufficient shares
     if len(shares) < threshold:
-        print(f"❌ Error: Insufficient shares provided! Needed {threshold}, got {len(shares)}.")
+        print(f"Error: Insufficient shares provided! Needed {threshold}, got {len(shares)}.")
         return None
 
     # Reconstruct the group commitment (placeholder logic for now)
@@ -63,7 +63,7 @@ def sign_message(message, shares, threshold):
     # Create signature
     signature = f"Signed({message})-{group_commitment}"
 
-    print(f"✅ Message signed successfully!")
+    print(f"Message signed successfully!")
     return signature
 
 
