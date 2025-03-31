@@ -2,8 +2,8 @@ import asyncio
 from nostr_sdk import Keys, Client, EventBuilder, NostrSigner
 
 async def publish_event():
-    private_key_hex = "npub1z25nn7mvs7jxp8ygyygqv534l6kxvj57qh5vr0dafkjm8szq2zas5v6mum"
-    relay_url = "wss://nos.lol/"
+    private_key_hex = "npub1z25nn7mvs7jxp8ygyygqv534l6kxvj57qh5vr0dafkjm8szq2zas5v6mum" #replace this with key taken from file and use encryption and decryption to make it more secure
+    relay_url = "wss://nos.lol/" #publish to own relay if possible, implement using exiting packages
     
     keys = Keys.parse(private_key_hex)
     signer = NostrSigner.keys(keys)
