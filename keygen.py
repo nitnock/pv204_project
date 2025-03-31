@@ -50,6 +50,7 @@ def generate_and_store_shares(n: int, t: int):
 
     # Save the group public key
     save_public_key_package(public_key_package)
+    save_group_public_key(group_verifying_key)  # Save the verifying key
 
 
     # Loop through each share and save it
