@@ -17,3 +17,12 @@ The Secure Emergency Broadcast System is designed to reliably sign, authenticate
 
 **Command-Line Interface (CLI)**: Simple and secure way for authorized users to sign messages and verify authenticity.
 
+## System Arquitecture
+The overall framework ensures the secure transmission of emergency messages while preventing unauthorized access or tampering. Only authorized signers can initiate broadcasts, and message integrity is maintained throughout.
+
+
+
+## Installation
+
+## Usage
+
