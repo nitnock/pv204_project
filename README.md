@@ -24,5 +24,11 @@ The overall framework ensures the secure transmission of emergency messages whil
 
 ## Installation
 
+Clone the repository:
+git clone https://github.com/nitnock/pv204_project.git
+cd secure-emergency-broadcast
+
+
 ## Usage
 
+## Security Considerations
