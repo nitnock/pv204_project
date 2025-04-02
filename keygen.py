@@ -28,24 +28,20 @@ def save_public_key_package(public_key_package):
 
 
 def generate_and_store_shares(n: int, t: int):
-    """
-    Generate `n` shares with a threshold `t` and save them along with the group public key.
-    """
-    print(f"Generating {n} FROST shares with threshold {t}...")
+   print(f" Generating {n} FROST shares with threshold {t}...")
     try:
-        # Generate shares using the frostpy module
         raw_json = generate_keys_py(n, t)
     except Exception as e:
-        print(f"Error during key generation: {e}")
+        print(f" Error during key generation: {e}")
         return
 
-    try:
-        # Parse the JSON result to get shares and the public key
+       try:
         result = json.loads(raw_json)
-        shares = result["shares"]  # Extract shares from the result
-        public_key = result["group_public_key"]  # Extract the group public key
+        shares = result["shares"]
+        public_key_package = result["group_public_key"]
+        group_verifying_key = result["group_verifying_key"]  # New field
     except Exception as e:
-        print(f"JSON parsing error: {e}")
+        print(f" JSON parsing error: {e}")
         return
 
     # Save the group public key
