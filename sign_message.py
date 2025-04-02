@@ -90,6 +90,6 @@ def sign_message(message: str, share_paths: List[str], threshold: int) -> str | 
         print("Message signed successfully!")
         return signature
     except Exception as e:
-        print(f"❌ Error during signing: {e}")
+        print(f"Error during signing: {e}")
         return None
 
