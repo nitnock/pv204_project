@@ -20,7 +20,7 @@ def read_share(file_path):
             share_data = json.loads(f.read())  # Parse the JSON string into a dict
         return share_data
     except Exception as e:
-        print(f"❌ Error reading share from {file_path}: {e}")
+        print(f"Error reading share from {file_path}: {e}")
         return None
 
 def collect_shares(share_paths: List[str]):
@@ -47,7 +47,7 @@ def read_public_key_package():
         print(f"Public key package loaded → {file_path}")
         return public_key_package
     except Exception as e:
-        print(f"❌ Error reading public key package: {e}")
+        print(f"Error reading public key package: {e}")
         return None
 
 def save_signature(signature):
@@ -61,4 +61,35 @@ def save_signature(signature):
         print(f"Signature saved → {file_path}")
     except Exception as e:
         print(f"❌ Error saving signature: {e}")
+
+def sign_message(message: str, share_paths: List[str], threshold: int) -> str | None:
+    """
+    Sign a message using FROST threshold cryptography with the specified shares and threshold.
+    """
+    print(f"Signing message: '{message}' with threshold {threshold}")
+
+    # Collect shares
+    shares = collect_shares(share_paths)
+    if len(shares) < threshold:
+        print(f"❌ Error: Insufficient shares provided! Needed {threshold}, got {len(shares)}.")
+        return None
+
+    # Load the group public key package
+    public_key_package = read_public_key_package()
+    if not public_key_package:
+        print("❌ Cannot sign message without the public key package.")
+        return None
+
+    # Prepare shares as a JSON string of KeyPackage structs
+    shares_json = json.dumps(shares)
+    print(f"🔍 Debug: Shares JSON prepared: {shares_json[:100]}...")  # Truncate for readability
+
+    # Call the Rust signing function
+    try:
+        signature = sign_message_py(message, shares_json, threshold, public_key_package)
+        print("Message signed successfully!")
+        return signature
+    except Exception as e:
+        print(f"❌ Error during signing: {e}")
+        return None
 
