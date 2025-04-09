@@ -60,7 +60,7 @@ def save_signature(signature):
             f.write(signature)
         print(f"Signature saved → {file_path}")
     except Exception as e:
-        print(f"❌ Error saving signature: {e}")
+        print(f"Error saving signature: {e}")
 
 def sign_message(message: str, share_paths: List[str], threshold: int) -> str | None:
     """
@@ -71,13 +71,13 @@ def sign_message(message: str, share_paths: List[str], threshold: int) -> str | 
     # Collect shares
     shares = collect_shares(share_paths)
     if len(shares) < threshold:
-        print(f"❌ Error: Insufficient shares provided! Needed {threshold}, got {len(shares)}.")
+        print(f"Error: Insufficient shares provided! Needed {threshold}, got {len(shares)}.")
         return None
 
     # Load the group public key package
     public_key_package = read_public_key_package()
     if not public_key_package:
-        print("❌ Cannot sign message without the public key package.")
+        print("Cannot sign message without the public key package.")
         return None
 
     # Prepare shares as a JSON string of KeyPackage structs
@@ -92,4 +92,22 @@ def sign_message(message: str, share_paths: List[str], threshold: int) -> str | 
     except Exception as e:
         print(f"Error during signing: {e}")
         return None
+
+if __name__ == "__main__":
+    message = "Emergency broadcast: System going offline."
+    threshold = 2  # Minimum number of shares required to sign a message
+
+    # List of participant share files to use
+    share_files = [
+        os.path.join(KEYS_DIR, "1", "secret_share.txt"),
+        os.path.join(KEYS_DIR, "2", "secret_share.txt"),
+    ]
+    # Attempt to sign the message
+    signature = sign_message(message, share_files, threshold)
+
+    if signature:
+        print(f"Generated Signature: {signature}")
+        save_signature(signature)
+    else:
+        print("Failed to generate the signature.")
 
