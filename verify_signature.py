@@ -11,7 +11,7 @@ def read_signature():
             data = json.load(f)  # Parse JSON
             return data["signature"]  # Extract signature
     except Exception as e:
-        print(f"Error reading signature: {e}")
+        print(f"❌ Error reading signature: {e}")
         return None
 
 def read_public_key():
@@ -20,7 +20,7 @@ def read_public_key():
         with open(file_path, "r") as f:
             return f.read().strip()
     except Exception as e:
-        print(f"Error reading public key: {e}")
+        print(f"❌ Error reading public key: {e}")
         return None
 
 def verify_signature(message: str, signature: str, public_key: str) -> bool | None:
@@ -30,7 +30,7 @@ def verify_signature(message: str, signature: str, public_key: str) -> bool | No
         print(f"Signature is {'valid' if is_valid else 'invalid'}")
         return is_valid
     except Exception as e:
-        print(f"Verification error: {e}")
+        print(f"❌ Verification error: {e}")
         return None
 
 if __name__ == "__main__":
@@ -44,4 +44,4 @@ if __name__ == "__main__":
         else:
             print("Failed to verify signature.")
     else:
-        print("Missing signature or public key.")
+        print("❌ Missing signature or public key.")
