@@ -1,8 +1,8 @@
 use pyo3::prelude::*;
 use frost_core::{SigningPackage, Identifier};
 use frost_core::keys::{generate_with_dealer, KeyPackage, PublicKeyPackage, IdentifierList, SigningShare, VerifyingShare};
-use frost_core::round1::{self, SigningNonces, SigningCommitments};
-use frost_core::round2::{self, SignatureShare};
+use frost_core::round1;
+use frost_core::round2;
 use frost_secp256k1::Secp256K1Sha256;
 use frost_core::{aggregate, VerifyingKey, Signature};
 use rand::thread_rng;
@@ -50,7 +50,7 @@ fn generate_keys_py(n: u16, t: u16) -> PyResult<String> {
                         "identifier": hex::encode(id.serialize()),
                         "signing_share": hex::encode(secret_share.signing_share().serialize()),
                         "verifying_key": hex::encode(bytes),
-                        "min_signers": t
+                        "min_signers": t  // Already correct, included in JSON
                     }
                 }),
                 Err(e) => serde_json::json!({"error": e.to_string()}),
@@ -61,17 +61,12 @@ fn generate_keys_py(n: u16, t: u16) -> PyResult<String> {
     let output_json = serde_json::json!({
         "shares": shares,
         "group_public_key": group_public_key_b64,
-        "group_verifying_key": group_verifying_key_b64  // New field for verification
+        "group_verifying_key": group_verifying_key_b64
     });
 
     serde_json::to_string_pretty(&output_json)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("JSON formatting error: {e}")))
 }
-
-// [sign_message_py remains unchanged from the working version]
-
-// [Keep all imports and other functions unchanged]
-// [Keep all imports and other functions unchanged]
 
 #[pyfunction]
 fn sign_message_py(message: String, shares_json: String, threshold: u16, pubkey_package_json: String) -> PyResult<(String, String)> {
@@ -102,14 +97,23 @@ fn sign_message_py(message: String, shares_json: String, threshold: u16, pubkey_
                 &hex::decode(share["verifying_key"].as_str().unwrap())
                     .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Hex decode error: {e}")))?
             ).map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Verifying key deserialize error: {e}")))?;
-            let min_signers = NonZeroU16::new(threshold)
-                .ok_or_else(|| PyErr::new::<pyo3::exceptions::PyValueError, _>("Invalid min_signers"))?;
+            let min_signers = NonZeroU16::new(
+                share["min_signers"].as_u64().unwrap() as u16  // Use min_signers from JSON
+            ).ok_or_else(|| PyErr::new::<pyo3::exceptions::PyValueError, _>("Invalid min_signers"))?;
 
             let verifying_share = VerifyingShare::from(signing_share);
 
             Ok(KeyPackage::new(identifier, signing_share, verifying_share, verifying_key, min_signers.get()))
         })
         .collect::<Result<Vec<_>, PyErr>>()?;
+
+    // Enforce original threshold from key packages
+    let original_min_signers = shares[0].min_signers();
+    if threshold < *original_min_signers {
+        return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
+            format!("Threshold too low: provided {}, required at least {} from key generation", threshold, original_min_signers)
+        ));
+    }
 
     if shares.len() < threshold as usize {
         return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
