@@ -95,17 +95,16 @@ async def get_web_app():
     <body class="bg-gray-100 min-h-screen">
         <header class="bg-indigo-600 text-white p-4 shadow-md">
             <div class="container mx-auto">
-                <h1 class="text-2xl font-bold">Nostr Relay Hub</h1>
-                <p class="text-sm">A decentralized message relay network</p>
+                <h1 class="text-2xl font-bold">Nostr Relay Dashboard</h1>
             </div>
         </header>
         <main class="container mx-auto mt-8 px-4">
             <section class="mb-8">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Connected Relays</h2>
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Relays Connected the Client</h2>
                 <div id="relay-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
             <section>
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Event Feed</h2>
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Events Feed: List of Messages Published</h2>
                 <div id="events" class="space-y-4"></div>
             </section>
         </main>
