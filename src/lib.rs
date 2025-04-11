@@ -70,8 +70,11 @@ fn generate_keys_py(n: u16, t: u16) -> PyResult<String> {
 
 // [sign_message_py remains unchanged from the working version]
 
+// [Keep all imports and other functions unchanged]
+// [Keep all imports and other functions unchanged]
+
 #[pyfunction]
-fn sign_message_py(message: String, shares_json: String, threshold: u16, pubkey_package_json: String) -> PyResult<String> {
+fn sign_message_py(message: String, shares_json: String, threshold: u16, pubkey_package_json: String) -> PyResult<(String, String)> {
     let shares_data: Vec<serde_json::Value> = serde_json::from_str(&shares_json)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Share deserialization error: {e}")))?;
     let pubkey_package: PublicKeyPackage<Secp256K1Sha256> = {
@@ -137,11 +140,15 @@ fn sign_message_py(message: String, shares_json: String, threshold: u16, pubkey_
     let signature = aggregate(&signing_package, &partial_signatures, &pubkey_package)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Aggregation error: {e}")))?;
 
-    let signature_b64 = general_purpose::STANDARD.encode(
-        signature.serialize()
-            .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Serialization error: {e}")))?
-    );
-    Ok(signature_b64)
+    let verifying_key = pubkey_package.verifying_key();
+    if verifying_key.verify(message.as_bytes(), &signature).is_err() {
+        return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>("Generated signature is invalid"));
+    }
+
+    let signature_bytes = signature.serialize()
+        .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Serialization error: {e}")))?;
+    let signature_b64 = general_purpose::STANDARD.encode(signature_bytes);
+    Ok((signature_b64, message))
 }
 
 #[pyfunction]
@@ -149,6 +156,7 @@ fn verify_signature_py(message: String, signature_b64: String, public_key_b64: S
     let signature_bytes = general_purpose::STANDARD
         .decode(signature_b64)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Signature decode error: {e}")))?;
+
     let public_key_bytes = general_purpose::STANDARD
         .decode(public_key_b64)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Public key decode error: {e}")))?;
@@ -161,6 +169,8 @@ fn verify_signature_py(message: String, signature_b64: String, public_key_b64: S
     let is_valid = public_key.verify(message.as_bytes(), &signature).is_ok();
     Ok(is_valid)
 }
+
+// [Rest of the file unchanged]
 
 #[pymodule]
 fn frostpy(_py: Python, m: &PyModule) -> PyResult<()> {
