@@ -23,7 +23,7 @@ def submit_message(message):
         new_id = max([m["id"] for m in messages], default=0) + 1
         new_message = {"id": new_id, "message": message, "status": "pending", "signatures": []}
         f.write(json.dumps(new_message) + "\n")
-    print(f"✅ Message submitted: ID {new_id} - '{message}'")
+    print(f" Message submitted: ID {new_id} - '{message}'")
 
 def list_messages():
     ensure_messages_file()
@@ -44,27 +44,27 @@ def sign_partial(message_id, share_path):
     messages = [json.loads(line) for line in lines if line.strip()]
     message = next((m for m in messages if m["id"] == message_id), None)
     if not message or message["status"] != "pending":
-        print(f"❌ Message ID {message_id} not found or already processed.")
+        print(f" Message ID {message_id} not found or already processed.")
         return
 
     share_file = share_path.split("/")[-2]  # Extract participant ID (e.g., "1" from "keys/1/secret_share.txt")
     if any(sig["share"] == share_file for sig in message["signatures"]):
-        print(f"❌ Share {share_file} already signed this message.")
+        print(f" Share {share_file} already signed this message.")
         return
 
     message["signatures"].append({"share": share_file})
     with open(MESSAGES_FILE, "w") as f:
         for m in messages:
             f.write(json.dumps(m) + "\n")
-    print(f"✅ Share {share_file} signed message ID {message_id}. Total signatures: {len(message['signatures'])}")
+    print(f" Share {share_file} signed message ID {message_id}. Total signatures: {len(message['signatures'])}")
 
 def sign(message, threshold, share_paths):
     signature = sign_message(message, share_paths, threshold)
     if signature:
-        print(f"✅ Signature generated: {signature}")
+        print(f" Signature generated: {signature}")
         save_signature(signature, message)
     else:
-        print("❌ Failed to sign the message.")
+        print(" Failed to sign the message.")
 
 def verify(message):
     signature = read_signature(message)  # Pass message to find the correct signature
@@ -73,13 +73,13 @@ def verify(message):
         is_valid = verify_signature(message, signature, public_key)
         if is_valid is not None:
             if is_valid:
-                print("✅ The signature is valid!")
+                print(" The signature is valid!")
             else:
-                print("❌ The signature is invalid.")
+                print(" The signature is invalid.")
         else:
-            print("❌ Failed to verify the signature due to an error.")
+            print(" Failed to verify the signature due to an error.")
     else:
-        print("❌ Failed to load the signature or public key.")
+        print(" Failed to load the signature or public key.")
 
 def broadcast(message_id, threshold):
     ensure_messages_file()
@@ -88,12 +88,12 @@ def broadcast(message_id, threshold):
     messages = [json.loads(line) for line in lines if line.strip()]
     message = next((m for m in messages if m["id"] == message_id), None)
     if not message or message["status"] != "pending":
-        print(f"❌ Message ID {message_id} not found or already broadcasted.")
+        print(f" Message ID {message_id} not found or already broadcasted.")
         return
 
     sig_count = len(message["signatures"])
     if sig_count < threshold:
-        print(f"❌ Insufficient signatures: {sig_count}/{threshold}.")
+        print(f" Insufficient signatures: {sig_count}/{threshold}.")
         return
 
     share_paths = [os.path.join(KEYS_DIR, sig["share"], "secret_share.txt") for sig in message["signatures"]]
@@ -104,10 +104,10 @@ def broadcast(message_id, threshold):
             for m in messages:
                 f.write(json.dumps(m) + "\n")
         save_signature(signature, message["message"])
-        print(f"✅ Message ID {message_id} signed and ready for Nostr broadcast.")
+        print(f" Message ID {message_id} signed and ready for Nostr broadcast.")
         os.system("python nostr.py")  # Run nostr.py to broadcast
     else:
-        print("❌ Failed to finalize signature.")
+        print(" Failed to finalize signature.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Emergency Broadcast System CLI using FROST")

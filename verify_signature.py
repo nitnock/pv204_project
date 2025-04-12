@@ -13,10 +13,10 @@ def read_signature(message: str):
         for entry in signatures:
             if entry["message"] == message:
                 return entry["signature"]
-        print(f"❌ No signature found for message: '{message}'")
+        print(f" No signature found for message: '{message}'")
         return None
     except Exception as e:
-        print(f"❌ Error reading signatures: {e}")
+        print(f" Error reading signatures: {e}")
         return None
 
 def read_public_key():
@@ -25,17 +25,17 @@ def read_public_key():
         with open(file_path, "r") as f:
             return f.read().strip()
     except Exception as e:
-        print(f"❌ Error reading public key: {e}")
+        print(f" Error reading public key: {e}")
         return None
 
 def verify_signature(message: str, signature: str, public_key: str) -> bool | None:
-    print(f"🔍 Verifying signature for message: '{message}'")
+    print(f"Verifying signature for message: '{message}'")
     try:
         is_valid = verify_signature_py(message, signature, public_key)
         print(f"Signature is {'valid' if is_valid else 'invalid'}")
         return is_valid
     except Exception as e:
-        print(f"❌ Verification error: {e}")
+        print(f" Verification error: {e}")
         return None
 
 if __name__ == "__main__":
@@ -49,4 +49,4 @@ if __name__ == "__main__":
         else:
             print("Failed to verify signature.")
     else:
-        print("❌ Missing signature or public key.")
+        print(" Missing signature or public key.")
