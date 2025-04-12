@@ -8,6 +8,8 @@ from verify_signature import verify_signature, read_signature, read_public_key
 
 KEYS_DIR = "keys"
 MESSAGES_FILE = "messages.txt"
+SIGNATURES_FILE = os.path.join(KEYS_DIR, "signatures.txt")
+LATEST_SIGNATURE_FILE = os.path.join(KEYS_DIR, "latest_signature.txt")
 
 def ensure_messages_file():
     if not os.path.exists(MESSAGES_FILE):
@@ -65,7 +67,7 @@ def sign(message, threshold, share_paths):
         print("❌ Failed to sign the message.")
 
 def verify(message):
-    signature = read_signature()
+    signature = read_signature(message)  # Pass message to find the correct signature
     public_key = read_public_key()
     if signature and public_key:
         is_valid = verify_signature(message, signature, public_key)
