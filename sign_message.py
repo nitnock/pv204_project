@@ -60,7 +60,7 @@ def save_signature(signature: str, message: str):
     print(f"Latest signature saved → {LATEST_SIGNATURE_FILE}")
 
 def sign_message(message: str, share_paths: List[str], threshold: int) -> str | None:
-    print(f"Signing message: '{message}' with threshold {threshold}")
+    print(f" Signing message: '{message}' with threshold {threshold}")
     shares = collect_shares(share_paths)
     if len(shares) < threshold:
         print(f"Error: Insufficient shares provided! Needed {threshold}, got {len(shares)}.")
