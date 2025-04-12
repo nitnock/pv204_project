@@ -161,6 +161,35 @@ FROST_NOSTR_PROJECT/
 
 ![img.png](img.png)
 
+FROST_NOSTR_PROJECT/
+
+├── Cargo.toml
+
+├── cli.py
+
+├── keygen.py
+
+├── lib.rs
+
+├── nostr.py
+
+├── sign_message.py
+
+├── verify_signature.py
+
+├── nostr_proj/ (virtual env)
+
+└── keys/
+
+    ├── 1/secret_share.txt
+    ├── 2/secret_share.txt
+    ├── ...
+    ├── public_key.txt
+    ├── public_key_package.txt
+    ├── signatures.txt
+    └── latest_signature.txt
+├── messages.txt
+
 **Troubleshooting:**
 * Rust Build Fails: Ensure Rust is installed (rustc --version) and run maturin develop again.
 * Python Module Not Found: Verify the virtual environment is active ((nostr_proj) in prompt) and maturin develop ran successfully.
