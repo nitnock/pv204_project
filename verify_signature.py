@@ -1,17 +1,22 @@
 import os
-import json  # Add this import
+import json
 from frostpy import verify_signature_py
 
 KEYS_DIR = "keys"
+SIGNATURES_FILE = os.path.join(KEYS_DIR, "signatures.txt")
 
-def read_signature():
-    file_path = os.path.join(KEYS_DIR, "signature.txt")
+def read_signature(message: str):
+    file_path = SIGNATURES_FILE
     try:
         with open(file_path, "r") as f:
-            data = json.load(f)  # Parse JSON
-            return data["signature"]  # Extract signature
+            signatures = json.load(f)
+        for entry in signatures:
+            if entry["message"] == message:
+                return entry["signature"]
+        print(f"❌ No signature found for message: '{message}'")
+        return None
     except Exception as e:
-        print(f"❌ Error reading signature: {e}")
+        print(f"❌ Error reading signatures: {e}")
         return None
 
 def read_public_key():
@@ -35,7 +40,7 @@ def verify_signature(message: str, signature: str, public_key: str) -> bool | No
 
 if __name__ == "__main__":
     message = "Emergency broadcast: System going offline."
-    signature = read_signature()
+    signature = read_signature(message)
     public_key = read_public_key()
     if signature and public_key:
         result = verify_signature(message, signature, public_key)
