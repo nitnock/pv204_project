@@ -13,32 +13,32 @@ def save_share(participant_id, encoded_share):
     file_path = os.path.join(dir_path, "secret_share.txt")
     with open(file_path, "w") as f:
         f.write(encoded_share)
-    print(f"Saved share for participant {participant_id} → {file_path}")
+    print(f" Saved share for participant {participant_id} → {file_path}")
 
 def save_public_key_package(public_key_package):
     file_path = os.path.join(KEYS_DIR, "public_key_package.txt")
     try:
         with open(file_path, "w") as f:
             f.write(public_key_package)
-        print(f"Group public key package saved → {file_path}")
+        print(f" Group public key package saved → {file_path}")
     except Exception as e:
-        print(f"Error saving public key package: {e}")
+        print(f" Error saving public key package: {e}")
 
 def save_group_public_key(group_verifying_key):
     file_path = os.path.join(KEYS_DIR, "public_key.txt")
     try:
         with open(file_path, "w") as f:
             f.write(group_verifying_key)
-        print(f"Group verifying key saved → {file_path}")
+        print(f" Group verifying key saved → {file_path}")
     except Exception as e:
-        print(f"Error saving group verifying key: {e}")
+        print(f" Error saving group verifying key: {e}")
 
 def generate_and_store_shares(n: int, t: int):
-    print(f"🔐 Generating {n} FROST shares with threshold {t}...")
+    print(f" Generating {n} FROST shares with threshold {t}...")
     try:
         raw_json = generate_keys_py(n, t)
     except Exception as e:
-        print(f"Error during key generation: {e}")
+        print(f" Error during key generation: {e}")
         return
 
     try:
@@ -47,7 +47,7 @@ def generate_and_store_shares(n: int, t: int):
         public_key_package = result["group_public_key"]
         group_verifying_key = result["group_verifying_key"]  # New field
     except Exception as e:
-        print(f"JSON parsing error: {e}")
+        print(f" JSON parsing error: {e}")
         return
 
     save_public_key_package(public_key_package)
@@ -56,10 +56,10 @@ def generate_and_store_shares(n: int, t: int):
     for share in shares:
         pid = share["participant_id"]
         encoded = json.dumps(share["share"])
-        print(f"🔍 Debug: Saving share for participant ID {pid}")
+        print(f" Debug: Saving share for participant ID {pid}")
         save_share(pid, encoded)
 
-    print("All shares and public key package generated and saved successfully.")
+    print(" All shares and public key package generated and saved successfully.")
 
 if __name__ == "__main__":
     generate_and_store_shares(n=3, t=2)
