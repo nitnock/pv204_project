@@ -29,7 +29,6 @@ You’ll need to have an account on nostrudel(https://nostrudel.ninja/#/) with a
 * Select "Install Now".
 
 **Verify Installation:**
-set PYTHONUTF8=1
 python --version
 
 Output should be Python 3.12.x.
